@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    sa
+    
 
     @Override
     public UserDetails loadUserByUsername(String loginId) {
