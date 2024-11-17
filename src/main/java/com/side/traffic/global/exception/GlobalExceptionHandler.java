@@ -8,26 +8,32 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import static com.side.traffic.global.exception.ErrorCode.*;
+import static org.springframework.http.HttpStatus.*;
 
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({ ApiException.class })
-    protected ResponseEntity handleApiException(ApiException ex) {
-        return new ResponseEntity(ErrorDto.of(ex.getErrorCode()), HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    @ExceptionHandler({ ApplicationException.class })
+    protected ResponseEntity handleApiException(ApplicationException ex) {
+        return ResponseEntity.status(ex.getHttpStatus()).body(new ServerExceptionResponse(ex.getCode(), ex.getReason()));
     }
 
     @ExceptionHandler({ UsernameNotFoundException.class })
-    protected ResponseEntity UsernameNotFoundException(ApiException ex) {
-        return new ResponseEntity(ErrorDto.of(UNAUTHORIZED_ACCESS), HttpStatus.UNAUTHORIZED);
+    protected ResponseEntity UsernameNotFoundException(UsernameNotFoundException ex) {
+        return ResponseEntity.status(UNAUTHORIZED).body(new ServerExceptionResponse(UNAUTHORIZED_ACCESS.getCode(), "UsernameNotFoundException -> " + ex.getMessage()));
     }
 
     @ExceptionHandler({ Exception.class })
     protected ResponseEntity exception(Exception ex) {
         log.error("Error message = {}", ex.getMessage(), ex);
-        return new ResponseEntity(ErrorDto.of(INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+        return ResponseEntity
+                .status(INTERNAL_SERVER_ERROR)
+                .body(new ServerExceptionResponse(INTERNAL_SERVER_ERROR.toString(), ex.getMessage()));
+    }
+
+    public record ServerExceptionResponse(String code, String reason) {
     }
 
 }

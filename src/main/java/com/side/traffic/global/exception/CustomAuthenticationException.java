@@ -12,14 +12,14 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+import static com.side.traffic.global.exception.ErrorCode.UNAUTHORIZED_ACCESS;
+
 @Component
 public class CustomAuthenticationException implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        ErrorDto errorResponse = ErrorDto.of(ErrorCode.UNAUTHORIZED_ACCESS);
-
-        ResponseEntity<ErrorDto> responseEntity = new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+        ResponseEntity<?> responseEntity = new ResponseEntity<>(new GlobalExceptionHandler.ServerExceptionResponse(UNAUTHORIZED_ACCESS.getCode(), UNAUTHORIZED_ACCESS.getReason()), HttpStatus.UNAUTHORIZED);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");

@@ -9,8 +9,9 @@ import com.side.traffic.domain.user.dto.response.UserResponse;
 import com.side.traffic.domain.user.entity.User;
 import com.side.traffic.domain.user.repositorty.UserRepository;
 import com.side.traffic.global.config.JwtTokenProvider;
-import com.side.traffic.global.exception.ApiException;
+import com.side.traffic.global.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
+//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,12 +23,12 @@ import static com.side.traffic.global.exception.ErrorCode.*;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder = null;
     private final JwtTokenProvider jwtTokenProvider;
 
     public RegisterResponse register(UserRegisterRequest userRegisterRequest) {
         if (userRepository.findByLoginId(userRegisterRequest.getLoginId()).isPresent()) {
-            throw new ApiException(DUPLICATE_LOGIN_ID);
+            throw DUPLICATE_LOGIN_ID.build();
         }
 
         String encode = passwordEncoder.encode(userRegisterRequest.getPassword());
@@ -36,10 +37,10 @@ public class UserService {
     }
 
     public LoginResponse login(LoginRequest loginRequest) {
-        User user = userRepository.findByLoginId(loginRequest.getLoginId()).orElseThrow(() -> new ApiException(INVALID_LOGIN_ID));
+        User user = userRepository.findByLoginId(loginRequest.getLoginId()).orElseThrow(() -> INVALID_LOGIN_ID.build());
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new ApiException(INVALID_PASSWORD);
+            throw INVALID_PASSWORD.build();
         }
 
         return LoginResponse.of(user.getLoginId(), jwtTokenProvider.generateToken(user.getLoginId()));
@@ -49,7 +50,7 @@ public class UserService {
     public UserResponse findUser(User user) {
         return UserResponse.of(
                 userRepository.findByLoginId(user.getLoginId())
-                        .orElseThrow(() -> new ApiException(INVALID_LOGIN_ID))
+                        .orElseThrow(() -> INVALID_PASSWORD.build())
         );
     }
 

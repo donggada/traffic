@@ -2,30 +2,36 @@ package com.side.traffic.global.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
     //BAD_REQUEST 잘못된 요청
-    INVALID_LOGIN_ID(401, "아이디 확인해주세요."),
-    INVALID_PASSWORD(401, "비번 확인해주세요."),
-    UNAUTHORIZED_ACCESS(401, "인증되지 않은 접근 입니다."),
-
-    //NOT_FOUND 잘못된 리소스 접근
-    USER_NOT_FOUND(404, "사용자 정보를 찾을 수 없습니다."),
-    CHALLENGE_ORDER_NOT_FOUND(404, "챌린지 신청정보를 찾을 수 없습니다."),
-    CHALLENGE_NOT_FOUND(404, "챌린지를 찾을 수 없습니다."),
+    INVALID_LOGIN_ID(CONFLICT,BAD_REQUEST.toString(), "아이디 확인해주세요."),
+    INVALID_PASSWORD(CONFLICT, BAD_REQUEST.toString(),"비번 확인해주세요."),
+    UNAUTHORIZED_ACCESS(UNAUTHORIZED, UNAUTHORIZED.toString(),"인증되지 않은 접근 입니다."),
+    DUPLICATE_LOGIN_ID(CONFLICT, BAD_REQUEST.toString(), "이미 존재한 아이디 입니다."),
+    USER_NOT_FOUND(NOT_FOUND, NOT_FOUND.toString(), "유저정보를 찾을수 없습니다."),
 
 
-    //409 CONFLICT 리소스 처리불가
-    DUPLICATE_LOGIN_ID(409, "이미 존재하는 로그인 ID 입니다."),
-    DUPLICATE_CHALLENGE(409, "이미 신청한 챌린지 입니다."),
-    DEPOSIT_OUT_OF_RANGE(409, "보증금이 허용된 범위를 벗어났습니다."),
-    CHALLENGE_ALREADY_ENDED(409, "이미 종료된 챌린지 입니다."),
+    QUEUE_ALREADY_REGISTERED_USER(HttpStatus.CONFLICT, "UQ-0001", "이미 대기열이 있습니다."),
+
 
     //500 INTERNAL SERVER ERROR
-    INTERNAL_SERVER_ERROR(500, "서버 에러입니다.");
+    SERVER_ERROR(INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR.toString(),"서버 에러입니다.");
 
-    private final int status;
-    private final String message;
+    private final HttpStatus httpStatus;
+    private final String code;
+    private final String reason;
+
+    public ApplicationException build() {
+        return new ApplicationException(httpStatus, code, reason);
+    }
+
+    public ApplicationException build(Object ...args) {
+        return new ApplicationException(httpStatus, code, reason.formatted(args));
+    }
 }

@@ -3,6 +3,8 @@ package com.side.traffic.global.config.security;
 
 import com.side.traffic.global.exception.CustomAuthenticationException;
 import com.side.traffic.global.filter.JwtAuthenticationFilter;
+import com.side.traffic.global.exception.CustomAuthenticationException;
+import com.side.traffic.global.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +30,8 @@ public class SecurityConfig {
         http.csrf(c -> c.disable())
                 .authorizeRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**").permitAll() // 인증 필요 없는 경로
-                        .requestMatchers("/api/v1/user/login","/api/v1/user/register").permitAll() // 나머지 요청은 인증 필요
+                        .requestMatchers("/api/v1/user/login","/api/v1/user/register").permitAll()
+                        .requestMatchers("/api/v1/queue/**", "/waiting-room", "/waiting-main-room").permitAll() // 나머지 요청은 인증 필요
                                 .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling ->

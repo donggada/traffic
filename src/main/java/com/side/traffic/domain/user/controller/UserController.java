@@ -8,7 +8,7 @@ import com.side.traffic.domain.user.dto.response.RegisterResponse;
 import com.side.traffic.domain.user.dto.response.UserResponse;
 import com.side.traffic.domain.user.service.UserService;
 import com.side.traffic.global.config.security.CustomUserDetails;
-import com.side.traffic.global.exception.ErrorDto;
+import com.side.traffic.global.exception.GlobalExceptionHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+//import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +31,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "로그인 성공",
                     content = @Content(schema = @Schema(implementation = LoginResponse.class))),
             @ApiResponse(responseCode = "401", description = "인증 실패",
-                    content = @Content(schema = @Schema(implementation = ErrorDto.class))),
+                    content = @Content(schema = @Schema(implementation = GlobalExceptionHandler.ServerExceptionResponse.class))),
             @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @PostMapping("login")
@@ -43,7 +44,7 @@ public class UserController {
             @ApiResponse(responseCode = "201", description = "등록 성공",
                     content = @Content(schema = @Schema(implementation = RegisterResponse.class))),
             @ApiResponse(responseCode = "400", description = "잘못된 요청",
-                    content = @Content(schema = @Schema(implementation = ErrorDto.class))),
+                    content = @Content(schema = @Schema(implementation = GlobalExceptionHandler.ServerExceptionResponse.class))),
             @ApiResponse(responseCode = "409", description = "이미 존재하는 사용자")
     })
     @PostMapping("register")
